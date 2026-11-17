@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GeryGames</title>
+<meta name="description" content="Gery's games: hop into the hub, dress up your character and play with friends.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/",
+    "trystero": "https://cdn.jsdelivr.net/npm/trystero@0.26.0/+esm"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="scene" aria-label="3D hub world"></canvas>
+
+<section id="title" class="screen">
+  <div class="card title-card">
+    <h1 class="logo">Gery<span>Games</span></h1>
+    <p class="tag">Hop in, dress up, play with friends.</p>
+    <label class="field"><span>Your name</span><input id="name" maxlength="16" autocomplete="nickname" placeholder="Type a name"></label>
+    <div class="row">
+      <button id="play" class="btn primary big">Play</button>
+      <button id="title-custom" class="btn big">Customize</button>
+    </div>
+  </div>
+</section>
+
+<div id="hud" hidden>
+  <div class="hud-top">
+    <span id="status" class="pill">Solo</span>
+    <div class="row">
+      <button id="btn-custom" class="btn icon" aria-label="Customize character" title="Customize">👕</button>
+      <button id="btn-mute" class="btn icon" aria-label="Mute" title="Mute">🔊</button>
+    </div>
+  </div>
+  <p id="hint" class="hint">WASD to walk · Space to jump · 1 to wave · drag to look · walk into a portal to play</p>
+</div>
+
+<aside id="custom" class="panel" hidden aria-label="Customize character">
+  <h2>Your look</h2>
+  <div id="custom-body"></div>
+  <button id="custom-done" class="btn primary">Done</button>
+</aside>
+
+<aside id="party" class="panel" hidden aria-live="polite"></aside>
+
+<div id="touch" hidden>
+  <div class="stick" aria-hidden="true"><div class="knob"></div></div>
+  <div class="touch-btns">
+    <button class="btn round wave" aria-label="Wave">👋</button>
+    <button class="btn round jump" aria-label="Jump">⤒</button>
+  </div>
+</div>
+
+<div id="game-ui"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
