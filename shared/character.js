@@ -146,9 +146,13 @@ export function buildCharacter(p) {
   const smile = mesh(new THREE.TorusGeometry(0.035, 0.009, 6, 12, Math.PI), eye, 0, -0.08, 0.315);
   smile.rotation.z = Math.PI;
   head.add(smile);
+  const mouth = mesh(new THREE.SphereGeometry(0.045, 12, 8), toon('#6b2433'), 0, -0.095, 0.3); // opens when singing
+  mouth.scale.set(1, 0.01, 0.4);
+  mouth.visible = false;
+  head.add(mouth);
   body.add(head);
 
-  const parts = { body, head, torso, legL: leg(-0.1), legR: leg(0.1), armL: arm(-0.26), armR: arm(0.26) };
+  const parts = { body, head, torso, smile, mouth, legL: leg(-0.1), legR: leg(0.1), armL: arm(-0.26), armR: arm(0.26) };
   addHair(head, p.hairStyle, toon(p.hair)); // hats are a bit bigger and sit over it
   addAccessory(parts, p.acc, p);
   root.userData.parts = parts;
@@ -160,16 +164,21 @@ export function disposeCharacter(root) {
   root.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
 }
 
-// state: {t, speed 0..1, vy, grounded, wave}
-export function animateCharacter(root, { t, speed = 0, vy = 0, grounded = true, wave = false }) {
-  const { body, head, legL, legR, armL, armR } = root.userData.parts;
+// state: {t, speed 0..1, vy, grounded, wave, sing 0..1 (mouth + bounce), cheer (arms up)}
+export function animateCharacter(root, { t, speed = 0, vy = 0, grounded = true, wave = false, sing = 0, cheer = false }) {
+  const { body, head, legL, legR, armL, armR, smile, mouth } = root.userData.parts;
+  smile.visible = sing < 0.08;
+  mouth.visible = !smile.visible;
+  mouth.scale.y = 0.3 + sing * 1.1;
   const swing = Math.sin(t * 11) * 0.7 * speed;
   legL.rotation.x = grounded ? swing : -0.5;
   legR.rotation.x = grounded ? -swing : 0.3;
   armL.rotation.x = grounded ? -swing : -2.4;
   armR.rotation.x = wave ? -2.6 : grounded ? swing : -2.4;
   armR.rotation.z = wave ? -0.4 + Math.sin(t * 14) * 0.5 : 0.25;
-  body.position.y = grounded ? Math.abs(Math.sin(t * 11)) * 0.05 * speed : 0;
+  armL.rotation.z = -0.25;
+  if (cheer) { armL.rotation.set(-2.7, 0, 0.3 + Math.sin(t * 8) * 0.2); armR.rotation.set(-2.7, 0, -0.3 - Math.sin(t * 8) * 0.2); }
+  body.position.y = grounded ? Math.abs(Math.sin(t * 11)) * 0.05 * speed + Math.abs(Math.sin(t * 7)) * 0.08 * sing : 0;
   const stretch = grounded ? 1 + Math.sin(t * 2.2) * 0.015 : 1 + THREE.MathUtils.clamp(vy * 0.02, -0.12, 0.15);
   body.scale.set(1 / Math.sqrt(stretch), stretch, 1 / Math.sqrt(stretch));
   head.rotation.z = Math.sin(t * 1.3) * 0.04;
